@@ -10,6 +10,31 @@ import java.util.HashMap;
 public class TransactionMapData implements Cloneable{
 	private static HashMap<String,Object> hashMap;
 	private static TransactionMapData tmd = null;
+	
+	private String name;
+	
+	
+	public static TransactionMapData getTmd() {
+		return tmd;
+	}
+	public static void setTmd(TransactionMapData tmd) {
+		TransactionMapData.tmd = tmd;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public TransactionMapData clone(){
+		TransactionMapData tmd = null;
+		try {
+			tmd = (TransactionMapData) super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+		return tmd;
+	}
 	public TransactionMapData(){
 		
 	}
@@ -29,7 +54,7 @@ public class TransactionMapData implements Cloneable{
 	}
 	
 	public void put(String key,Object value){
-		this.tmd.getHashMap().put(key, value);
+		this.tmd.getHashMap().put(key, value == null ? "" : value);
 	}
 	
 	public Object get(String key){

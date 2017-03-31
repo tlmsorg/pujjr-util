@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.pujjr.com/pujjrExcel" 
+	xmlns="http://www.pujjr.com/pujjrExcel"
+	elementFormDefault="qualified">
+
+	<xsd:complexType name="personinfo">
+		<xsd:sequence>
+			<xsd:element name="name" type="xsd:string" />
+			<xsd:element name="sex" type="xsd:string" />
+			<xsd:element name="age" type="xsd:integer" />
+		</xsd:sequence>
+		<xsd:attribute name="id" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[id为必输项]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	
+	
+	<xsd:attributeGroup name="cellPubAttrGroup">
+		<xsd:attribute name="fontFamily" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[报表默认字体名称]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="fontSize" type="xsd:integer">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[报表默认字号]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="isBold" type="xsd:boolean">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[true:粗体;fasel:非粗体]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="horizentalAlign" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[cell默认水平对齐方式,center:居中对齐;left:靠左对齐;right:靠右对齐]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="verticalAlign" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[cell默认垂直对齐方式,center:居中对齐;left:靠左对齐;right:靠右对齐]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="colSpan" type="xsd:integer">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[cell列跨度]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="rowHeight" type="xsd:integer">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[行高]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:attributeGroup>
+	
+	<xsd:complexType name="excelType">
+		<xsd:sequence>
+			<xsd:element ref="title" minOccurs="1" maxOccurs="1"/>
+			<xsd:element ref="cols" minOccurs="1" maxOccurs="1"/>
+			<xsd:element ref="content" minOccurs="1" maxOccurs="1"></xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="tranCode" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[excel报表交易码]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="tranName" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[excel报表交易名称]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="colSize" type="xsd:integer">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[报表总列数]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="serviceName" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[处理类]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attributeGroup ref="cellPubAttrGroup"/>
+	</xsd:complexType>
+		
+	<xsd:complexType name="titleType">
+		<xsd:attribute name="titleName" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[excel标题]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attributeGroup ref="cellPubAttrGroup"/>
+	</xsd:complexType>
+	
+	<xsd:complexType name="colsType">
+		<xsd:sequence>
+			<xsd:element ref="col" minOccurs="1" maxOccurs="unbounded"></xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="cellPubAttrGroup"/>
+	</xsd:complexType>
+	
+	
+	<xsd:complexType name="colType" mixed="true">
+		<xsd:attribute name="id" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[列编码]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="colWidth" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[列宽]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="isSum" type="xsd:boolean">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[true:当前列合计;false:当前列不做合计处理]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="isAvg" type="xsd:boolean">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[true:当前列求平均值;false:当前列不做求平均处理]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="isCount" type="xsd:boolean">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[true:当前列求总行数;false:当前列不做求总行数处理]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attributeGroup ref="cellPubAttrGroup"/>
+	</xsd:complexType>
+	
+	<xsd:complexType name="contentType">
+		<xsd:attributeGroup ref="cellPubAttrGroup"></xsd:attributeGroup>
+	</xsd:complexType>
+	
+	
+	<xsd:element name="user" type="personinfo" >
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[测试：用户节点]]></xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<xsd:element name="excel" type="excelType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[excel根节点]]></xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="title" type="titleType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[标题节点]]></xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="cols" type="colsType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[报表列]]></xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="col" type="colType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[具体报表列]]></xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="content" type="contentType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[报表正文]]></xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+</xsd:schema>

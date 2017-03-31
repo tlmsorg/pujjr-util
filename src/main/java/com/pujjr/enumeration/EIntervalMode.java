@@ -1,4 +1,4 @@
-package com.pujjr.utils.enumeration;
+package com.pujjr.enumeration;
 
 /**
  * 时间间隔模式
