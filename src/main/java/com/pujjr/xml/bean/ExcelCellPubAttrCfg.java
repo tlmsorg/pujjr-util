@@ -12,7 +12,15 @@ public class ExcelCellPubAttrCfg {
 	private String verticalAlign;
 	private String colSpan;
 	private String rowHeight;
+	private String foregroundColor;
 	
+	
+	public String getForegroundColor() {
+		return foregroundColor;
+	}
+	public void setForegroundColor(String foregroundColor) {
+		this.foregroundColor = foregroundColor;
+	}
 	public String getRowHeight() {
 		return rowHeight;
 	}

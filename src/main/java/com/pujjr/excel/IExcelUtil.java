@@ -15,7 +15,7 @@ import com.pujjr.xml.bean.ExcelCellPubAttrCfg;
 @Service
 public interface IExcelUtil {
 	
-	public XSSFCellStyle getCellStyle(XSSFWorkbook workBook,ExcelCellPubAttrCfg pubAttrCfg,String defaultFontName,int defaultFontSize);
+	public XSSFCellStyle getCellStyle(XSSFWorkbook workBook,ExcelCellPubAttrCfg pubAttrCfg,String defaultFontName,int defaultFontSize,String tranCode);
 	
 	public File generalExcel(Map<String,Object> pool);
 	

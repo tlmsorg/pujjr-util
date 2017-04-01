@@ -37,12 +37,12 @@
 		</xsd:attribute>
 		<xsd:attribute name="horizentalAlign" type="xsd:string">
 			<xsd:annotation>
-				<xsd:documentation><![CDATA[cell默认水平对齐方式,center:居中对齐;left:靠左对齐;right:靠右对齐]]></xsd:documentation>
+				<xsd:documentation><![CDATA[cell默认水平对齐方式,left:左对齐;center:居中对齐;right:右对齐]]></xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 		<xsd:attribute name="verticalAlign" type="xsd:string">
 			<xsd:annotation>
-				<xsd:documentation><![CDATA[cell默认垂直对齐方式,center:居中对齐;left:靠左对齐;right:靠右对齐]]></xsd:documentation>
+				<xsd:documentation><![CDATA[cell默认垂直对齐方式,top:上对齐;center:居中对齐;bottom:下对齐]]></xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 		<xsd:attribute name="colSpan" type="xsd:integer">
@@ -55,13 +55,19 @@
 				<xsd:documentation><![CDATA[行高]]></xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="foregroundColor" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[cell前景色,三原色(rgb)参数格式:红色#绿色#蓝色]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:attributeGroup>
 	
 	<xsd:complexType name="excelType">
 		<xsd:sequence>
 			<xsd:element ref="title" minOccurs="1" maxOccurs="1"/>
 			<xsd:element ref="cols" minOccurs="1" maxOccurs="1"/>
-			<xsd:element ref="content" minOccurs="1" maxOccurs="1"></xsd:element>
+			<xsd:element ref="content" minOccurs="1" maxOccurs="1"/>
+			<xsd:element ref="conditions" minOccurs="1" maxOccurs="1"/>
 		</xsd:sequence>
 		<xsd:attribute name="tranCode" type="xsd:string" use="required">
 			<xsd:annotation>
@@ -136,6 +142,21 @@
 		<xsd:attributeGroup ref="cellPubAttrGroup"></xsd:attributeGroup>
 	</xsd:complexType>
 	
+	<xsd:complexType name="conditionsType">
+		<xsd:sequence>
+			<xsd:element ref="condition" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="cellPubAttrGroup"/>
+	</xsd:complexType>
+	
+	<xsd:complexType name="conditionType"  mixed="true">
+		<xsd:attribute name="id" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[查询条件编码【对应变量池pool中key值】]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attributeGroup ref="cellPubAttrGroup"/>
+	</xsd:complexType>
 	
 	<xsd:element name="user" type="personinfo" >
 		<xsd:annotation>
@@ -166,6 +187,16 @@
 	<xsd:element name="content" type="contentType">
 		<xsd:annotation>
 			<xsd:documentation><![CDATA[报表正文]]></xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="conditions" type="conditionsType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[报表导出查询条件：条件名统一配置]]></xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="condition" type="conditionType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[报表导出查询条件：各条件值取值配置]]></xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
 	

@@ -10,8 +10,17 @@ public class ExcelCfg extends ExcelCellPubAttrCfg{
 	private ExcelTitleCfg excelTitle;
 	private ExcelColumnsCfg excelColumns;
 	private ExcelContentCfg excelContent;
+	private ExcelConditionsCfg conditionsCfg;
 	
 	
+	
+	
+	public ExcelConditionsCfg getConditionsCfg() {
+		return conditionsCfg;
+	}
+	public void setConditionsCfg(ExcelConditionsCfg conditionsCfg) {
+		this.conditionsCfg = conditionsCfg;
+	}
 	public String getServiceName() {
 		return serviceName;
 	}

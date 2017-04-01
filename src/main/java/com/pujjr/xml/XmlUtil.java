@@ -22,6 +22,8 @@ import com.pujjr.utils.Utils;
 import com.pujjr.xml.bean.ExcelCfg;
 import com.pujjr.xml.bean.ExcelColumnCfg;
 import com.pujjr.xml.bean.ExcelColumnsCfg;
+import com.pujjr.xml.bean.ExcelConditionCfg;
+import com.pujjr.xml.bean.ExcelConditionsCfg;
 import com.pujjr.xml.bean.ExcelContentCfg;
 import com.pujjr.xml.bean.ExcelTitleCfg;
 
@@ -79,12 +81,59 @@ public class XmlUtil {
 				excelCfg = (ExcelCfg) XmlUtil.getNodeCfg(excelCfg, attrs);
 			}
 		}
-		//pjrp:excel子元素
+		//pjrp:excel所有孩子节点
 		List<Element> elementList = currElement.elements();
 		for (Element element : elementList) {
 			String elmentName = element.getName();
 			List<Attribute> attrList = element.attributes();
-			if("title".equals(elmentName)){
+			switch(elmentName){
+			case "title":
+				ExcelTitleCfg titleCfg = new ExcelTitleCfg();
+				titleCfg = (ExcelTitleCfg) XmlUtil.getNodeCfg(titleCfg, attrList);
+				excelCfg.setExcelTitle(titleCfg);
+				break;
+			case "cols":
+				ExcelColumnsCfg colsCfg = new ExcelColumnsCfg();
+//				List<Field> colCfgFields = Utils.getFieldList(colsCfg.getClass());
+				colsCfg = (ExcelColumnsCfg) XmlUtil.getNodeCfg(colsCfg, attrList);
+				List<ExcelColumnCfg> excelColList = new ArrayList<ExcelColumnCfg>();
+				//cols节点下所有col节点
+				List<Element> colElementList = element.elements();
+				for (Element colElement : colElementList) {
+					ExcelColumnCfg colCfg = new ExcelColumnCfg();
+					colCfg.setName(colElement.getStringValue());//列名
+					List<Attribute> colAttrList = colElement.attributes();
+					colCfg = (ExcelColumnCfg) XmlUtil.getNodeCfg(colCfg, colAttrList);
+					excelColList.add(colCfg);
+				}
+				colsCfg.setExcelColList(excelColList);
+				excelCfg.setExcelColumns(colsCfg);
+				break;
+			case "content":
+				ExcelContentCfg contentCfg = new ExcelContentCfg();
+				List<Field> contentCfgFields = Utils.getFieldList(contentCfg.getClass());
+				contentCfg = (ExcelContentCfg) XmlUtil.getNodeCfg(contentCfg, attrList);
+				excelCfg.setExcelContent(contentCfg);
+				break;
+			case "conditions":
+				ExcelConditionsCfg conditionsCfg = new ExcelConditionsCfg();
+				conditionsCfg = (ExcelConditionsCfg) XmlUtil.getNodeCfg(conditionsCfg, attrList);
+				//conditions节点下所有condition节点
+				List<Element> conditionElementList = element.elements();
+				List<ExcelConditionCfg> excelConditionList = new ArrayList<ExcelConditionCfg>();
+				for (Element conditionElement : conditionElementList) {
+					ExcelConditionCfg conditionCfg = new ExcelConditionCfg();
+					List<Attribute> conditionAttrList = conditionElement.attributes();
+					conditionCfg = (ExcelConditionCfg) XmlUtil.getNodeCfg(conditionCfg, conditionAttrList);
+					conditionCfg.setName(conditionElement.getStringValue());
+					excelConditionList.add(conditionCfg);
+				}
+				conditionsCfg.setConditionList(excelConditionList);
+				excelCfg.setConditionsCfg(conditionsCfg);
+				break;
+			}
+			
+			/*if("title".equals(elmentName)){
 				ExcelTitleCfg titleCfg = new ExcelTitleCfg();
 				titleCfg = (ExcelTitleCfg) XmlUtil.getNodeCfg(titleCfg, attrList);
 				excelCfg.setExcelTitle(titleCfg);
@@ -93,7 +142,7 @@ public class XmlUtil {
 //				List<Field> colCfgFields = Utils.getFieldList(colsCfg.getClass());
 				colsCfg = (ExcelColumnsCfg) XmlUtil.getNodeCfg(colsCfg, attrList);
 				List<ExcelColumnCfg> excelColList = new ArrayList<ExcelColumnCfg>();
-				//col部分
+				//cols节点下所有col节点
 				List<Element> colElementList = element.elements();
 				for (Element colElement : colElementList) {
 					ExcelColumnCfg colCfg = new ExcelColumnCfg();
@@ -109,7 +158,20 @@ public class XmlUtil {
 				List<Field> contentCfgFields = Utils.getFieldList(contentCfg.getClass());
 				contentCfg = (ExcelContentCfg) XmlUtil.getNodeCfg(contentCfg, attrList);
 				excelCfg.setExcelContent(contentCfg);
-			}
+			}else if("conditions".equals(elmentName)){
+				ExcelConditionsCfg conditionsCfg = new ExcelConditionsCfg();
+				conditionsCfg = (ExcelConditionsCfg) XmlUtil.getNodeCfg(conditionsCfg, attrList);
+				//conditions节点下所有condition节点
+				List<Element> conditionElementList = element.elements();
+				List<ExcelConditionCfg> excelConditionList = new ArrayList();
+				for (Element conditionElement : conditionElementList) {
+					ExcelConditionCfg conditionCfg = new ExcelConditionCfg();
+					List<Attribute> conditionAttrList = conditionElement.attributes();
+					conditionCfg = (ExcelConditionCfg) XmlUtil.getNodeCfg(conditionCfg, conditionAttrList);
+					excelConditionList.add(conditionCfg);
+				}
+				conditionsCfg.setConditionList(excelConditionList);
+			}*/
 			logger.info(element.getName());
 		}
 		logger.info((elementList.size()));
