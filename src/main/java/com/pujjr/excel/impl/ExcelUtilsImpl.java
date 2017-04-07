@@ -54,9 +54,6 @@ public class ExcelUtilsImpl implements IExcelUtil {
 	
 	private static final Logger logger = Logger.getLogger(ExcelUtilsImpl.class);
 	
-	@Value("${excel.temp.directory}")
-	private String excelTempDirectory;
-	
 	@Override
 	public XSSFCellStyle getCellStyle(XSSFWorkbook workBook, ExcelCellPubAttrCfg pubAttrCfg,String defaultFontName,int defaultFontSize,String tranCode) {
 		XSSFCellStyle cellStyle = workBook.createCellStyle();
@@ -158,10 +155,6 @@ public class ExcelUtilsImpl implements IExcelUtil {
 		FileOutputStream fos = null;
 		File targetFile = null;//生成最终文件
 		try {
-			/*File director = new File(excelTempDirectory);
-			if(!director.exists())
-				director.mkdirs();
-			targetFile = new File(excelTempDirectory + File.separator + fileName);*/
 			targetFile = File.createTempFile(fileName, suffix);
 			fos = new FileOutputStream(targetFile);
 		} catch (Exception e1) {

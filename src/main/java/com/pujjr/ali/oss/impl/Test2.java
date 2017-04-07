@@ -15,7 +15,7 @@ public class Test2 {
 	private static String key = "test777/testttt777.xml";
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
-		new OssServiceImpl().putObject(bucketName, key, createSampleFile());
+		new OssServiceImpl().putObject(endpoint,accessKeyId,accessKeySecret,bucketName, key, createSampleFile());
 	}
 
 	private static File createSampleFile() throws IOException {

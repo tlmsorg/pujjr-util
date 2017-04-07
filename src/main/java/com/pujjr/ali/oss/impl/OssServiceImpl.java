@@ -19,14 +19,21 @@ import com.pujjr.ali.oss.IOssService;
 @Service
 public class OssServiceImpl implements IOssService {
 
-	private static String endpoint = "oss-cn-shanghai.aliyuncs.com";
+	/*private static String endpoint = "oss-cn-shanghai.aliyuncs.com";
 	private static String accessKeyId = "LTAIh1DJbbGvo9gN";
 	private static String accessKeySecret = "tjqPBo4x4Ve24oG1tytPP4yeX2DD7k";
 	private static String bucketName = "pjrp";
-	private static String key = "tang/test/ddd/eee";
+	private static String key = "tang/test/ddd/eee";*/
+	@Value("${endpoint}")
+	private static String endpoint;
+	@Value("${accessKeyId}")
+	private static String accessKeyId;
+	@Value("${accessKeySecret}")
+	private static String accessKeySecret;
 
 	@Override
-	public void putObject(String bucketName, String key, File file) {
+	public void putObject(String endpoint,String accessKeyId,String accessKeySecret
+			,String bucketName,String key, File file) {
 		OSSClient client = new OSSClient(endpoint, accessKeyId, accessKeySecret);
 		/*
 		 * Constructs a client instance with your account for accessing OSS
