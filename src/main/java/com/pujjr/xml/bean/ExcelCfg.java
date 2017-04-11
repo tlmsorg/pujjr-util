@@ -7,6 +7,7 @@ public class ExcelCfg extends ExcelCellPubAttrCfg{
 	private String tranName;
 	private String colSize; 
 	private String serviceName;
+	private String suffix;
 	private ExcelTitleCfg excelTitle;
 	private ExcelColumnsCfg excelColumns;
 	private ExcelContentCfg excelContent;
@@ -15,6 +16,12 @@ public class ExcelCfg extends ExcelCellPubAttrCfg{
 	
 	
 	
+	public String getSuffix() {
+		return suffix;
+	}
+	public void setSuffix(String suffix) {
+		this.suffix = suffix;
+	}
 	public ExcelConditionsCfg getConditionsCfg() {
 		return conditionsCfg;
 	}

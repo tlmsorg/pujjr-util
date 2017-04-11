@@ -25,11 +25,11 @@ public class OssServiceImpl implements IOssService {
 	private static String bucketName = "pjrp";
 	private static String key = "tang/test/ddd/eee";*/
 	@Value("${endpoint}")
-	private static String endpoint;
+	private String endpoint;
 	@Value("${accessKeyId}")
-	private static String accessKeyId;
+	private String accessKeyId;
 	@Value("${accessKeySecret}")
-	private static String accessKeySecret;
+	private String accessKeySecret;
 
 	@Override
 	public void putObject(String endpoint,String accessKeyId,String accessKeySecret

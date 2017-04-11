@@ -38,7 +38,7 @@ public class XmlUtil {
 	 */
 	public static Object getNodeCfg(Object nodeCfg,List<Attribute> attrList){
 		Class<?> titleCfgCls = nodeCfg.getClass();
-		logger.info("titleCfg.getClass():"+nodeCfg.getClass());
+//		logger.info("titleCfg.getClass():"+nodeCfg.getClass());
 		List<Field> titleCfgFields = Utils.getFieldList(nodeCfg.getClass());
 		for (Attribute attr : attrList) {
 			String attrName = attr.getName();
@@ -172,9 +172,9 @@ public class XmlUtil {
 				}
 				conditionsCfg.setConditionList(excelConditionList);
 			}*/
-			logger.info(element.getName());
+//			logger.info(element.getName());
 		}
-		logger.info((elementList.size()));
+//		logger.info((elementList.size()));
 		return excelCfg;
 	}
 	

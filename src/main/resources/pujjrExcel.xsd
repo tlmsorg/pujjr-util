@@ -89,6 +89,11 @@
 				<xsd:documentation><![CDATA[处理类]]></xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="suffix" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[后缀名：xls、xlsx]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
 		<xsd:attributeGroup ref="cellPubAttrGroup"/>
 	</xsd:complexType>
 		
@@ -133,6 +138,21 @@
 		<xsd:attribute name="isCount" type="xsd:boolean">
 			<xsd:annotation>
 				<xsd:documentation><![CDATA[true:当前列求总行数;false:当前列不做求总行数处理]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="dataType" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[excel列数据类型：string：字符串;double：数字;date：日期]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="dateFormat" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[指定日期数据格式。示例：日期：yyyy-MM-dd hh:mm:ss]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="scale" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[指定精度。两位小数：2]]></xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 		<xsd:attributeGroup ref="cellPubAttrGroup"/>
