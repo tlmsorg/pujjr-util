@@ -312,7 +312,9 @@ public class ExcelUtilsImpl implements IExcelUtil {
 				if(colCfg.getDateFormat() != null){
 					dateFomate = colCfg.getDateFormat();
 				}
-				contentTempCell.setCellValue(Utils.formateString2Date(cellValue, dateFomate));
+				if(!("".equals(cellValue) || null == cellValue || "null".equals(cellValue))){
+					contentTempCell.setCellValue(Utils.formateString2Date(cellValue, dateFomate));
+				}
 				dateCellStyle.setDataFormat(workBook.createDataFormat().getFormat(dateFomate));
                 contentTempCell.setCellStyle(dateCellStyle);
 				break;
@@ -442,7 +444,8 @@ public class ExcelUtilsImpl implements IExcelUtil {
 	public File generalExcel(Map<String,Object> pool) {
 		List<HashMap<String, Object>> dataList = (List<HashMap<String, Object>>) pool.get("dataList");
 		String tranCode = (String) pool.get("tranCode");
-		int defaultColWidth = 4000;
+		//excel列默认宽度5000
+		int defaultColWidth = 5000;
 		
 		ExcelCfg excelCfg = XmlUtil.getExcelCfg(tranCode);
 		ExcelTitleCfg titleCfg = excelCfg.getExcelTitle();

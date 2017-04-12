@@ -122,7 +122,7 @@
 		</xsd:attribute>
 		<xsd:attribute name="colWidth" type="xsd:string">
 			<xsd:annotation>
-				<xsd:documentation><![CDATA[列宽]]></xsd:documentation>
+				<xsd:documentation><![CDATA[指定excel列宽,若不指定宽度,默认宽度为5000]]></xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 		<xsd:attribute name="isSum" type="xsd:boolean">
@@ -147,7 +147,7 @@
 		</xsd:attribute>
 		<xsd:attribute name="dateFormat" type="xsd:string">
 			<xsd:annotation>
-				<xsd:documentation><![CDATA[指定日期数据格式。示例：日期：yyyy-MM-dd hh:mm:ss]]></xsd:documentation>
+				<xsd:documentation><![CDATA[指定日期数据格式。示例：日期：yyyy-MM-dd hh:mm:ss。如果指定格式，按指定格式显示;如果未指定，默认格式：yyyy-MM-dd]]></xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 		<xsd:attribute name="scale" type="xsd:string">

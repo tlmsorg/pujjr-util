@@ -17,6 +17,8 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -31,7 +33,24 @@ import com.pujjr.enumeration.EIntervalMode;
 public class Utils {
 	private Logger logger = Logger.getLogger(Utils.class);
 	
+	
 	public static int seq=0;
+	
+	/**
+	 * 过滤List<HashMap<String, Object>>类型数据中的null为""
+	 * @param dataList 待过滤数据
+	 * @return 过滤后数据
+	 */
+	public static List<HashMap<String, Object>> filtDataList(List<HashMap<String, Object>> dataList) {
+		for (HashMap<String, Object> rowMap : dataList) {
+			Iterator keyIt = rowMap.keySet().iterator();
+			while (keyIt.hasNext()) {
+				String key = (String) keyIt.next();
+				rowMap.put(key, (rowMap.get(key) == null || "".equals(rowMap.get(key))) ? "" : rowMap.get(key));
+			}
+		}
+		return dataList;
+	}
 	
 	/**
 	 * 获取set方法名
