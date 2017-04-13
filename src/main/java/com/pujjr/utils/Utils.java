@@ -37,6 +37,46 @@ public class Utils {
 	public static int seq=0;
 	
 	/**
+	 * 获取指定日期所在月份第一天
+	 * @param currMonth 格式：2012-01或2012-01-05
+	 * @return 月第一天，格式：2012-01-01
+	 */
+	public static String getFirstDayOfMonth(String currMonth){
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+		SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+		String firstDayOfMonth = "";
+		try {
+			firstDayOfMonth = sdf2.format(sdf.parse(currMonth));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		System.out.println("日期："+currMonth+"，所在月第一天："+firstDayOfMonth);
+		return firstDayOfMonth;
+	}
+	
+	/**
+	 * 获取指定日期所在月份最后一天
+	 * @param currMonth 格式：2012-01或2012-01-05
+	 * @return 月最后一天，格式：2012-01-01
+	 */
+	public static String getLastDayOfMonth(String currMonth){
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+		SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar calendar = Calendar.getInstance();
+		String lastDayOfMonth = "";
+		try {
+			calendar.setTime(sdf.parse(currMonth));
+			calendar.add(Calendar.MONTH, 1);
+			calendar.add(Calendar.DAY_OF_MONTH, -1);
+			lastDayOfMonth = sdf2.format(calendar.getTime());
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		System.out.println("日期："+currMonth+"，所在月最后一天："+lastDayOfMonth);
+		return lastDayOfMonth;
+	}
+	
+	/**
 	 * 过滤List<HashMap<String, Object>>类型数据中的null为""
 	 * @param dataList 待过滤数据
 	 * @return 过滤后数据

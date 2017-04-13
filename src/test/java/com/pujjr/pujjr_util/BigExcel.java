@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFChildAnchor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
@@ -32,7 +33,12 @@ public class BigExcel {
         long startTime = System.currentTimeMillis();
         Sheet sh = wb.createSheet();
         // 使用createRow将信息写在内存中。
-        for (int rownum = 0; rownum < 200; rownum++) {
+        Row row1 = sh.createRow(0);
+        Cell cell1 = row1.createCell(0);
+        cell1.setCellValue("ttttttttt");
+        CellStyle cellStyle1 = wb.createCellStyle();
+        cell1.setCellStyle(cellStyle1);
+        for (int rownum = 1; rownum < 200; rownum++) {
             Row row = sh.createRow(rownum);
             System.out.println("rownum:"+rownum);
             for (int cellnum = 0; cellnum < 6; cellnum++) {

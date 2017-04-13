@@ -47,7 +47,7 @@
 		</xsd:attribute>
 		<xsd:attribute name="colSpan" type="xsd:integer">
 			<xsd:annotation>
-				<xsd:documentation><![CDATA[cell列跨度]]></xsd:documentation>
+				<xsd:documentation><![CDATA[cell列跨度。title默认跨度为列总数，如果指定特定跨度，则设置为指定跨度]]></xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 		<xsd:attribute name="rowHeight" type="xsd:integer">
