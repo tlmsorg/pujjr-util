@@ -4,7 +4,7 @@
 
 	<groupId>com.pujjr</groupId>
 	<artifactId>pujjr-util</artifactId>
-	<version>1.0.1.20170509-RELEASE</version>
+	<version>1.0.2.20170515-RELEASE</version>
 	<packaging>jar</packaging>
 
 	<name>pujjr-util</name>

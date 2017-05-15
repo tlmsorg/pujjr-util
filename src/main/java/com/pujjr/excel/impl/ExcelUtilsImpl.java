@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -64,7 +65,7 @@ import com.pujjr.xml.bean.ExcelTitleCfg;
 public class ExcelUtilsImpl implements IExcelUtil {
 	
 	private static final Logger logger = Logger.getLogger(ExcelUtilsImpl.class);
-	
+	private int rowIndex = 0;
 	@Override
 	public HSSFCellStyle getCellStyle03(HSSFWorkbook workBook, ExcelCellPubAttrCfg pubAttrCfg, String defaultFontName,
 			int defaultFontSize, String tranCode) {
@@ -335,8 +336,10 @@ public class ExcelUtilsImpl implements IExcelUtil {
 		ExcelColumnsCfg colsCfg = excelCfg.getExcelColumns();
 		List<ExcelColumnCfg> colCfgList = colsCfg.getExcelColList();
 		ExcelConditionsCfg conditionsCfg = excelCfg.getConditionsCfg();
-		List<ExcelConditionCfg> conditionList = conditionsCfg.getConditionList();
-
+		List<ExcelConditionCfg> conditionList = new ArrayList<ExcelConditionCfg>();
+		if(conditionsCfg != null){
+			conditionList = conditionsCfg.getConditionList();
+		}
 		//海量数据批量插入
 		SXSSFWorkbook workBook = null;
 		File targetFile = new File(fileFullName);
@@ -375,7 +378,8 @@ public class ExcelUtilsImpl implements IExcelUtil {
 		if(pageNow < pageTotal){//非最后页
 			for (int i = (pageNow - 1) * pageSize; i <(pageNow -1 + 1) * pageSize ; i++) {
 				rowMap = dataList.get(i);
-				contentRow = sheet.createRow(i+3);
+//				contentRow = sheet.createRow(i+3);
+				contentRow = sheet.createRow(i+rowIndex);
 				contentRow.setHeight(Short.parseShort(contentCfg.getRowHeight()));
 				for (int j = 0; j < colCfgList.size() ; j++) {
 					colCfg = colCfgList.get(j);
@@ -396,7 +400,8 @@ public class ExcelUtilsImpl implements IExcelUtil {
 		}else if (pageNow == pageTotal){//最后一页
 			for (int i = (pageNow-1) * pageSize; i < rowNum; i++) {
 				rowMap = dataList.get(i);
-				contentRow = sheet.createRow(i+3);
+//				contentRow = sheet.createRow(i+3);
+				contentRow = sheet.createRow(i+rowIndex);
 				contentRow.setHeight(Short.parseShort(contentCfg.getRowHeight()));
 				for (int j = 0; j < colCfgList.size() ; j++) {
 					colCfg = colCfgList.get(j);
@@ -442,6 +447,7 @@ public class ExcelUtilsImpl implements IExcelUtil {
 	
 	@Override
 	public File generalExcel(Map<String,Object> pool) {
+		rowIndex = 0;
 		List<HashMap<String, Object>> dataList = (List<HashMap<String, Object>>) pool.get("dataList");
 		String tranCode = (String) pool.get("tranCode");
 		//excel列默认宽度5000
@@ -453,8 +459,10 @@ public class ExcelUtilsImpl implements IExcelUtil {
 		ExcelColumnsCfg colsCfg = excelCfg.getExcelColumns();
 		List<ExcelColumnCfg> colCfgList = colsCfg.getExcelColList();
 		ExcelConditionsCfg conditionsCfg = excelCfg.getConditionsCfg();
-		List<ExcelConditionCfg> conditionList = conditionsCfg.getConditionList();
-		
+		List<ExcelConditionCfg> conditionList = new ArrayList<ExcelConditionCfg>();
+		if(conditionsCfg != null){
+			conditionList = conditionsCfg.getConditionList();
+		}
 		if(excelCfg.getColSize() == null){
 			excelCfg.setColSize(colCfgList.size() + "");
 		}
@@ -501,7 +509,7 @@ public class ExcelUtilsImpl implements IExcelUtil {
 		int defaultFontSize = Integer.parseInt(excelCfg.getFontSize());
 		
 		//标题行
-		XSSFRow titleRow = sheet.createRow(0);
+		XSSFRow titleRow = sheet.createRow(rowIndex++);
 		titleRow.setHeight(Short.parseShort(titleCfg.getRowHeight()));
 		XSSFCellStyle titleCellStyle = this.getCellStyle07(workBook, titleCfg,defaultFontName,defaultFontSize,tranCode);
 		for (int i = 0; i < colNum; i++) {
@@ -515,22 +523,24 @@ public class ExcelUtilsImpl implements IExcelUtil {
 		sheet.addMergedRegion(titleMergeRegion);
 		
 		//查询条件行
-		XSSFRow conditionRow = sheet.createRow(1);
-		conditionRow.setHeight(Short.parseShort(conditionsCfg.getRowHeight()));
-		XSSFCellStyle contitionsStyle = this.getCellStyle07(workBook, conditionsCfg, defaultFontName, defaultFontSize,tranCode);
-		for (int i = 0; i < conditionList.size(); i++) {
-			ExcelConditionCfg conditionCfg = conditionList.get(i);
-			XSSFCellStyle conditionStyle = this.getCellStyle07(workBook,conditionCfg,defaultFontName,defaultFontSize,tranCode);
-			XSSFCell conditionNameCell = conditionRow.createCell(i * 2);
-			XSSFCell conditionValueCell = conditionRow.createCell(i * 2+1);
-			conditionNameCell.setCellStyle(contitionsStyle);
-			conditionValueCell.setCellStyle(conditionStyle);
-			conditionNameCell.setCellValue(conditionCfg.getName());
-			conditionValueCell.setCellValue(pool.get(conditionCfg.getId()) + "");
+		if(conditionsCfg != null){
+			XSSFRow conditionRow = sheet.createRow(rowIndex++);
+			conditionRow.setHeight(Short.parseShort(conditionsCfg.getRowHeight()));
+			XSSFCellStyle contitionsStyle = this.getCellStyle07(workBook, conditionsCfg, defaultFontName, defaultFontSize,tranCode);
+			for (int i = 0; i < conditionList.size(); i++) {
+				ExcelConditionCfg conditionCfg = conditionList.get(i);
+				XSSFCellStyle conditionStyle = this.getCellStyle07(workBook,conditionCfg,defaultFontName,defaultFontSize,tranCode);
+				XSSFCell conditionNameCell = conditionRow.createCell(i * 2);
+				XSSFCell conditionValueCell = conditionRow.createCell(i * 2+1);
+				conditionNameCell.setCellStyle(contitionsStyle);
+				conditionValueCell.setCellStyle(conditionStyle);
+				conditionNameCell.setCellValue(conditionCfg.getName());
+				conditionValueCell.setCellValue(pool.get(conditionCfg.getId()) + "");
+			}
 		}
 		
 		//表格列名行
-		XSSFRow colNameRow = sheet.createRow(2);
+		XSSFRow colNameRow = sheet.createRow(rowIndex++);
 //		colNameRow.setHeight((short) 1000);
 		colNameRow.setHeight(Short.parseShort(colsCfg.getRowHeight()));
 		XSSFCellStyle colCellStyle = this.getCellStyle07(workBook, colsCfg,defaultFontName,defaultFontSize,tranCode);
