@@ -101,9 +101,12 @@ public class XmlUtil {
 				List<Element> colElementList = element.elements();
 				for (Element colElement : colElementList) {
 					ExcelColumnCfg colCfg = new ExcelColumnCfg();
-					colCfg.setName(colElement.getStringValue());//列名
 					List<Attribute> colAttrList = colElement.attributes();
 					colCfg = (ExcelColumnCfg) XmlUtil.getNodeCfg(colCfg, colAttrList);
+					if("".equals(colElement.getStringValue()))
+						colCfg.setName(colCfg.getId());
+					else
+						colCfg.setName(colElement.getStringValue());//列名
 					excelColList.add(colCfg);
 				}
 				colsCfg.setExcelColList(excelColList);
