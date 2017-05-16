@@ -34,7 +34,6 @@ public class OssServiceImpl implements IOssService {
 	@Override
 	public void putObject(String endpoint,String accessKeyId,String accessKeySecret
 			,String bucketName,String key, File file) {
-		OSSClient client = new OSSClient(endpoint, accessKeyId, accessKeySecret);
 		/*
 		 * Constructs a client instance with your account for accessing OSS
 		 */

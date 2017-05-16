@@ -1,5 +1,7 @@
 package com.pujjr.utils;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -21,6 +23,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 import java.util.UUID;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -29,12 +32,32 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.util.StringUtils;
 import com.itextpdf.text.pdf.BaseFont;
 import com.pujjr.enumeration.EIntervalMode;
+import com.pujjr.test.AppTest;
 
 public class Utils {
-	private Logger logger = Logger.getLogger(Utils.class);
+	private static  Logger logger = Logger.getLogger(Utils.class);
 	
 	
 	public static int seq=0;
+	
+	/**
+	 * 获取property value值
+	 * @param key 键名
+	 * @param fileName 文件名
+	 * @return 键对应值
+	 */
+	public static String getProperty(String key,String fileName,String realPath){
+		Properties pops = new Properties();
+		String path = null;
+		try {
+			path = realPath+fileName;
+			logger.info(key+"|"+fileName+"|"+path);
+			pops.load(new FileInputStream(new File(path)));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return pops.getProperty(key);
+	}
 	
 	/**
 	 * 获取指定日期所在月份第一天
