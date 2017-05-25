@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -66,6 +67,7 @@ public class ExcelUtilsImpl implements IExcelUtil {
 	
 	private static final Logger logger = Logger.getLogger(ExcelUtilsImpl.class);
 	private int rowIndex = 0;
+	private InputStream fis = null;
 	@Override
 	public HSSFCellStyle getCellStyle03(HSSFWorkbook workBook, ExcelCellPubAttrCfg pubAttrCfg, String defaultFontName,
 			int defaultFontSize, String tranCode) {
@@ -329,8 +331,8 @@ public class ExcelUtilsImpl implements IExcelUtil {
 	}
 	@Override
 	public void writeLargeFile(String fileFullName,int pageNow,int pageSize,int pageTotal,String defaultFontName,
-			int defaultFontSize,String tranCode,List<HashMap<String, Object>> dataList){
-		ExcelCfg excelCfg = XmlUtil.getExcelCfg(tranCode);
+			int defaultFontSize,String tranCode,List<HashMap<String, Object>> dataList,ExcelCfg excelCfg){
+//		ExcelCfg excelCfg = XmlUtil.getExcelCfg(tranCode,fis);
 		ExcelTitleCfg titleCfg = excelCfg.getExcelTitle();
 		ExcelContentCfg contentCfg = excelCfg.getExcelContent();
 		ExcelColumnsCfg colsCfg = excelCfg.getExcelColumns();
@@ -427,7 +429,7 @@ public class ExcelUtilsImpl implements IExcelUtil {
 		//文件写出
 		FileOutputStream fos = null;
 		try {
-			fos = new FileOutputStream(fileFullName );
+			fos = new FileOutputStream(fileFullName);
 			workBook.write(fos);
 			fos.close();
 			workBook.close();
@@ -446,14 +448,15 @@ public class ExcelUtilsImpl implements IExcelUtil {
 	}
 	
 	@Override
-	public File generalExcel(Map<String,Object> pool) {
+	public File generalExcel(Map<String,Object> pool,InputStream fis) {
+		this.fis = fis;
 		rowIndex = 0;
 		List<HashMap<String, Object>> dataList = (List<HashMap<String, Object>>) pool.get("dataList");
 		String tranCode = (String) pool.get("tranCode");
 		//excel列默认宽度5000
 		int defaultColWidth = 5000;
 		
-		ExcelCfg excelCfg = XmlUtil.getExcelCfg(tranCode);
+		ExcelCfg excelCfg = XmlUtil.getExcelCfg(tranCode,fis);
 		ExcelTitleCfg titleCfg = excelCfg.getExcelTitle();
 		ExcelContentCfg contentCfg = excelCfg.getExcelContent();
 		ExcelColumnsCfg colsCfg = excelCfg.getExcelColumns();
@@ -475,9 +478,17 @@ public class ExcelUtilsImpl implements IExcelUtil {
 		String suffix = (String) pool.get("suffix");
 		FileOutputStream fos = null;
 		File targetFile = null;//生成最终文件
+		
 		String fileFullName = fileName+""+Utils.get16UUID()+suffix;
 		try {
-			targetFile = new File(fileFullName);
+			/*String filePath = ExcelUtilsImpl.class.getClassLoader().getResource("").toURI().getPath();
+			targetFile = new File(filePath + fileFullName);
+//			fileFullName = filePath + fileFullName;
+			String dir = filePath + File.separator +"temp" + File.separator;
+			File file = new File(dir);
+			if(!file.exists()){
+				file.mkdirs();
+			}*/
 			fos = new FileOutputStream(fileFullName);
 		} catch (Exception e1) {
 			e1.printStackTrace();
@@ -556,10 +567,12 @@ public class ExcelUtilsImpl implements IExcelUtil {
 		//表格正文行
 		int pageSize = rowNum;//页大小，每页记录条数
 		int pageTotal = 0;//总页数
-		if(rowNum % pageSize == 0)
-			pageTotal = rowNum/pageSize;
-		else
-			pageTotal = rowNum/pageSize +1;
+		if(pageSize != 0){
+			if(rowNum % pageSize == 0)
+				pageTotal = rowNum/pageSize;
+			else
+				pageTotal = rowNum/pageSize +1;
+		}
 		try {
 			workBook.write(fos);
 			fos.close();
@@ -569,7 +582,7 @@ public class ExcelUtilsImpl implements IExcelUtil {
 		}
 		for (int j = 1; j <= pageTotal; j++) {
 			logger.info("************j="+j+"***********pageTotal="+pageTotal+"********pageSize:"+pageSize+"****rowNum:"+rowNum+"******************************");
-			this.writeLargeFile(fileFullName,j, pageSize,pageTotal, defaultFontName, defaultFontSize, tranCode, dataList);
+			this.writeLargeFile(fileFullName,j, pageSize,pageTotal, defaultFontName, defaultFontSize, tranCode, dataList,excelCfg);
 			//回收Old Gen
 			System.gc();
 		}
@@ -578,12 +591,13 @@ public class ExcelUtilsImpl implements IExcelUtil {
 	}
 	
 	@Override
-	public File generalExcel2003(Map<String, Object> pool) {
+	public File generalExcel2003(Map<String, Object> pool,InputStream fis) {
+		this.fis = fis;
 		List<HashMap<String, Object>> dataList = (List<HashMap<String, Object>>) pool.get("dataList");
 		String tranCode = (String) pool.get("tranCode");
 		int defaultColWidth = 4000;
 		
-		ExcelCfg excelCfg = XmlUtil.getExcelCfg(tranCode);
+		ExcelCfg excelCfg = XmlUtil.getExcelCfg(tranCode,fis);
 		ExcelTitleCfg titleCfg = excelCfg.getExcelTitle();
 		ExcelContentCfg contentCfg = excelCfg.getExcelContent();
 		ExcelColumnsCfg colsCfg = excelCfg.getExcelColumns();

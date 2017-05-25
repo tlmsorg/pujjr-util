@@ -1,6 +1,7 @@
 package com.pujjr.excel;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
 import com.pujjr.xml.bean.ExcelCellPubAttrCfg;
+import com.pujjr.xml.bean.ExcelCfg;
 import com.pujjr.xml.bean.ExcelColumnCfg;
 
 @Service
@@ -66,7 +68,7 @@ public interface IExcelUtil {
 	 * @param dataList 数据源
 	 */
 	public void writeLargeFile(String fileFullName,int pageNow,int pageSize,int pageTotal,String defaultFontName,
-			int defaultFontSize,String tranCode,List<HashMap<String, Object>> dataList);
+			int defaultFontSize,String tranCode,List<HashMap<String, Object>> dataList,ExcelCfg excelCfg);
 	/**
 	 * 写入excel
 	 * @param cellValue
@@ -81,13 +83,13 @@ public interface IExcelUtil {
 	 * @param pool
 	 * @return
 	 */
-	public File generalExcel(Map<String,Object> pool);
+	public File generalExcel(Map<String,Object> pool,InputStream fis);
 	/**
 	 * 生成03版excel
 	 * @param pool
 	 * @return
 	 */
-	public File generalExcel2003(Map<String,Object> pool);
+	public File generalExcel2003(Map<String,Object> pool,InputStream fis);
 	
 //	public void excelWrite(String filePath,String fileName);
 }

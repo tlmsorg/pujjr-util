@@ -32,7 +32,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.util.StringUtils;
 import com.itextpdf.text.pdf.BaseFont;
 import com.pujjr.enumeration.EIntervalMode;
-import com.pujjr.test.AppTest;
 
 public class Utils {
 	private static  Logger logger = Logger.getLogger(Utils.class);
@@ -51,7 +50,7 @@ public class Utils {
 		String path = null;
 		try {
 			path = realPath+fileName;
-			logger.info(key+"|"+fileName+"|"+path);
+			logger.info("获取属性:"+key+"|"+fileName+"|"+path);
 			pops.load(new FileInputStream(new File(path)));
 		} catch (Exception e) {
 			e.printStackTrace();

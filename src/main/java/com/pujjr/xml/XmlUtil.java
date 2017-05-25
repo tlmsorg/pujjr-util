@@ -2,6 +2,8 @@ package com.pujjr.xml;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
@@ -62,16 +64,20 @@ public class XmlUtil {
 	 * @param tranCode 交易码
 	 * @return excel配置信息对象
 	 */
-	public static ExcelCfg getExcelCfg(String tranCode){
+	public static ExcelCfg getExcelCfg(String tranCode,InputStream fis){
 		ExcelCfg excelCfg = new ExcelCfg();
 		Element currElement = null;//当前交易码对应excel节点对象
 		String path = "";
 		try {
+			logger.info("rrr"+XmlUtil.class.getClassLoader().getResource("").toURI().getPath().toString());
 			path = XmlUtil.class.getClassLoader().getResource("").toURI().getPath().toString();
+			logger.info("pujjr-excel.xml文件目录："+path);
 		} catch (URISyntaxException e) {
+			logger.error("pujjr-excel.xml文件目录："+path);
 			e.printStackTrace();
 		}
-		List<Element> nodeList = XmlUtil.getNodeList(path, "pujjr-excel.xml", "pjrp", "http://www.pujjr.com/pujjrExcel", "pjrp:excel");
+//		List<Element> nodeList = XmlUtil.getNodeList(path, "pujjr-excel.xml", "pjrp", "http://www.pujjr.com/pujjrExcel", "pjrp:excel");
+		List<Element> nodeList = XmlUtil.getNodeList(fis, "pjrp", "http://www.pujjr.com/pujjrExcel", "pjrp:excel");
 		Iterator<Element> it = nodeList.iterator();
 		while(it.hasNext()){
 			Element element = it.next();
@@ -178,6 +184,12 @@ public class XmlUtil {
 //			logger.info(element.getName());
 		}
 //		logger.info((elementList.size()));
+		try {
+			fis.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return excelCfg;
 	}
 	
@@ -190,12 +202,14 @@ public class XmlUtil {
 	 * @param nodeName 节点名称(带前缀)
 	 * @return
 	 */
-	public static List<Element> getNodeList(String path,String fileName,String prefix,String nameSpace,String nodeName){
+//	public static List<Element> getNodeList(String path,String fileName,String prefix,String nameSpace,String nodeName){
+	public static List<Element> getNodeList(InputStream fis,String prefix,String nameSpace,String nodeName){
 		List<Element> nodeList = null;
 		SAXReader reader = new SAXReader();
 		Document document = null;
 		try {
-			document = reader.read(new File(path + File.separator + fileName));
+//			document = reader.read(new File(path + File.separator + fileName));
+			document = reader.read(fis);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

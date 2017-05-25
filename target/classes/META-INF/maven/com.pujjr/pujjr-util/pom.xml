@@ -4,7 +4,7 @@
 
 	<groupId>com.pujjr</groupId>
 	<artifactId>pujjr-util</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.3.20170525-RELEASE</version>
 	<packaging>jar</packaging>
 
 	<name>pujjr-util</name>
@@ -169,4 +169,17 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>releases</id>
+			<name>releases</name>
+			<url>http://172.18.10.72:8081/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshots</id>
+			<name>snapshots</name>
+			<url>http://172.18.10.72:8081/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
