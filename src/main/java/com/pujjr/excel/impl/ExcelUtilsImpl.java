@@ -469,10 +469,12 @@ public class ExcelUtilsImpl implements IExcelUtil {
 		if(excelCfg.getColSize() == null){
 			excelCfg.setColSize(colCfgList.size() + "");
 		}
-		if(titleCfg.getColSpan() == null){
-			titleCfg.setColSpan(colCfgList.size() + "");
+		
+		if(titleCfg != null){
+			if(titleCfg.getColSpan() == null){
+				titleCfg.setColSpan(colCfgList.size() + "");
+			}
 		}
-
 		//指定目录生成文件
 		String fileName = (String) pool.get("fileName");
 		String suffix = (String) pool.get("suffix");
@@ -481,14 +483,6 @@ public class ExcelUtilsImpl implements IExcelUtil {
 		
 		String fileFullName = fileName+""+Utils.get16UUID()+suffix;
 		try {
-			/*String filePath = ExcelUtilsImpl.class.getClassLoader().getResource("").toURI().getPath();
-			targetFile = new File(filePath + fileFullName);
-//			fileFullName = filePath + fileFullName;
-			String dir = filePath + File.separator +"temp" + File.separator;
-			File file = new File(dir);
-			if(!file.exists()){
-				file.mkdirs();
-			}*/
 			fos = new FileOutputStream(fileFullName);
 		} catch (Exception e1) {
 			e1.printStackTrace();
@@ -520,18 +514,20 @@ public class ExcelUtilsImpl implements IExcelUtil {
 		int defaultFontSize = Integer.parseInt(excelCfg.getFontSize());
 		
 		//标题行
-		XSSFRow titleRow = sheet.createRow(rowIndex++);
-		titleRow.setHeight(Short.parseShort(titleCfg.getRowHeight()));
-		XSSFCellStyle titleCellStyle = this.getCellStyle07(workBook, titleCfg,defaultFontName,defaultFontSize,tranCode);
-		for (int i = 0; i < colNum; i++) {
-			XSSFCell cellTitle = titleRow.createCell(i);
-			cellTitle.setCellStyle(titleCellStyle);
-			if(i == 0)
-				cellTitle.setCellValue(titleCfg.getTitleName());
+		if(titleCfg != null){
+			XSSFRow titleRow = sheet.createRow(rowIndex++);
+			titleRow.setHeight(Short.parseShort(titleCfg.getRowHeight()));
+			XSSFCellStyle titleCellStyle = this.getCellStyle07(workBook, titleCfg,defaultFontName,defaultFontSize,tranCode);
+			for (int i = 0; i < colNum; i++) {
+				XSSFCell cellTitle = titleRow.createCell(i);
+				cellTitle.setCellStyle(titleCellStyle);
+				if(i == 0)
+					cellTitle.setCellValue(titleCfg.getTitleName());
+			}
+			//标题行合并
+			CellRangeAddress titleMergeRegion = new CellRangeAddress(0, 0, 0, colNum - 1);
+			sheet.addMergedRegion(titleMergeRegion);
 		}
-		//标题行合并
-		CellRangeAddress titleMergeRegion = new CellRangeAddress(0, 0, 0, colNum - 1);
-		sheet.addMergedRegion(titleMergeRegion);
 		
 		//查询条件行
 		if(conditionsCfg != null){

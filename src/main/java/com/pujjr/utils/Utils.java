@@ -25,6 +25,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
@@ -491,12 +494,32 @@ public class Utils {
 	 * @return
 	 */
 	public static Date formateString2Date(String date,String formateStr){
+		/*Pattern pt = Pattern.compile("^\\d{4}-{4}-\\d{2}-\\d{2}$");
+		
 		SimpleDateFormat formate = new SimpleDateFormat(formateStr);
 		Date dateRet = null;
 		try {
 			dateRet = formate.parse(date);
 		} catch (Exception e) {
 			e.printStackTrace();
+		}*/
+		String[] patterns = new String[]{"^\\d{4}$","^\\d{4}-\\d{2}$","^\\d{4}-\\d{2}-\\d{2}$","^\\d{4}-\\d{2}-\\d{2} \\d{2}$","^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}$","^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$","^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}.\\d*$"};
+		String[] dateFormats = new String[]{"yyyy","yyyy-MM","yyyy-MM-dd","yyyy-MM-dd HH","yyyy-MM-dd HH:mm","yyyy-MM-dd HH:mm:ss","yyyy-MM-dd HH:mm:ss.S"};
+		Date dateRet = null;
+		for (int i = 0;i < patterns.length;i++) {
+			Pattern pt = Pattern.compile(patterns[i]);
+			Matcher matcher = pt.matcher(date);
+			if(matcher.find()){
+				SimpleDateFormat sdfParse = new SimpleDateFormat(dateFormats[i]);
+				SimpleDateFormat sdfFormat = new SimpleDateFormat(formateStr);
+				try {
+					Date dateSrc = sdfParse.parse(date);
+					dateRet = dateSrc;
+					System.out.println(sdfFormat.format(dateSrc));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return dateRet;
 	}

@@ -74,6 +74,7 @@ public class OssServiceImpl implements IOssService {
 			 * Upload an object to your bucket
 			 */
 			System.out.println("Uploading a new object to OSS from a file\n");
+			System.out.println("file.getAbsolutePath():"+file.getAbsolutePath());
 			ossClient.putObject(new PutObjectRequest(bucketName, key, file));
 
 			/*
