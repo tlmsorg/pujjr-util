@@ -60,6 +60,22 @@
 				<xsd:documentation><![CDATA[cell前景色,三原色(rgb)参数格式:红色#绿色#蓝色]]></xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
+		
+		<xsd:attribute name="dataType" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[excel列数据类型：string：字符串;double：数字;date：日期]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="dateFormat" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[指定日期数据格式。示例：日期：yyyy-MM-dd HH:mm:ss。如果指定格式，按指定格式显示;如果未指定，默认格式：yyyy-MM-dd]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="scale" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[指定精度。两位小数：2]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:attributeGroup>
 	
 	<xsd:complexType name="excelType">
@@ -110,6 +126,11 @@
 		<xsd:sequence>
 			<xsd:element ref="col" minOccurs="1" maxOccurs="unbounded"></xsd:element>
 		</xsd:sequence>
+		<xsd:attribute name="isShowColName" type="xsd:boolean">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[列名行隐藏显示标识,缺省情况下，将显示列名行。true:显示列名行  false:隐藏列名行]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
 		<xsd:attributeGroup ref="cellPubAttrGroup"/>
 	</xsd:complexType>
 	
@@ -140,21 +161,7 @@
 				<xsd:documentation><![CDATA[true:当前列求总行数;false:当前列不做求总行数处理]]></xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="dataType" type="xsd:string">
-			<xsd:annotation>
-				<xsd:documentation><![CDATA[excel列数据类型：string：字符串;double：数字;date：日期]]></xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="dateFormat" type="xsd:string">
-			<xsd:annotation>
-				<xsd:documentation><![CDATA[指定日期数据格式。示例：日期：yyyy-MM-dd HH:mm:ss。如果指定格式，按指定格式显示;如果未指定，默认格式：yyyy-MM-dd]]></xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="scale" type="xsd:string">
-			<xsd:annotation>
-				<xsd:documentation><![CDATA[指定精度。两位小数：2]]></xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
+		
 		<xsd:attributeGroup ref="cellPubAttrGroup"/>
 	</xsd:complexType>
 	

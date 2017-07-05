@@ -14,7 +14,31 @@ public class ExcelCellPubAttrCfg {
 	private String rowHeight;
 	private String foregroundColor;
 	
+	private String dataType;//excel列数据类型。string：字符串;double：数字;date：日期
+	private String dateFormat;//日期格式
+	private String scale;//double精度
 	
+	
+	
+	
+	public String getDataType() {
+		return dataType;
+	}
+	public void setDataType(String dataType) {
+		this.dataType = dataType;
+	}
+	public String getDateFormat() {
+		return dateFormat;
+	}
+	public void setDateFormat(String dateFormat) {
+		this.dateFormat = dateFormat;
+	}
+	public String getScale() {
+		return scale;
+	}
+	public void setScale(String scale) {
+		this.scale = scale;
+	}
 	public String getForegroundColor() {
 		return foregroundColor;
 	}

@@ -68,6 +68,7 @@ public class ExcelUtilsImpl implements IExcelUtil {
 	private static final Logger logger = Logger.getLogger(ExcelUtilsImpl.class);
 	private int rowIndex = 0;
 	private InputStream fis = null;
+	private final int defaultColWidth = 5000;//excel列默认宽度5000
 	@Override
 	public HSSFCellStyle getCellStyle03(HSSFWorkbook workBook, ExcelCellPubAttrCfg pubAttrCfg, String defaultFontName,
 			int defaultFontSize, String tranCode) {
@@ -141,7 +142,7 @@ public class ExcelUtilsImpl implements IExcelUtil {
 	}
 	
 	@Override
-	public XSSFCellStyle getCellStyle07(XSSFWorkbook workBook, ExcelCellPubAttrCfg pubAttrCfg,String defaultFontName,int defaultFontSize,String tranCode) {
+	public XSSFCellStyle getCellStyle07(XSSFWorkbook workBook, ExcelCellPubAttrCfg pubAttrCfg,String defaultFontName,int defaultFontSize,String tranCode,String dataType,String dateFormat) {
 		XSSFCellStyle cellStyle = workBook.createCellStyle();
 		switch (pubAttrCfg.getHorizentalAlign()==null ? "" : pubAttrCfg.getHorizentalAlign()) {
 		case "left":
@@ -206,11 +207,19 @@ public class ExcelUtilsImpl implements IExcelUtil {
 		cellStyle.setBorderRight(BorderStyle.THIN);
 		cellStyle.setBorderTop(BorderStyle.THIN);
 		cellStyle.setFillBackgroundColor(new XSSFColor(new Color(100, 100, 100)));
+		
+		//日期格式
+		if("date".equals(dataType)){
+			cellStyle.setDataFormat(workBook.createDataFormat().getFormat(dateFormat));//日期格式
+		}
 		return cellStyle;
 	}
 	@Override
 	public CellStyle getCellStyleOfLargeFile(SXSSFWorkbook workBook, ExcelCellPubAttrCfg pubAttrCfg,String defaultFontName,int defaultFontSize,String tranCode,String dataType,String dateFormat) {
 		CellStyle cellStyle = workBook.createCellStyle();
+		/**
+		 * 说明：CellStyle，不支持setFillForegroundColor中指定红绿蓝三原色，导致无法灵活设置cell前景色 20170705
+		 */
 //		SXSSFCellStyle cellStyle = workBook.createCellStyle();
 		switch (pubAttrCfg.getHorizentalAlign()==null ? "" : pubAttrCfg.getHorizentalAlign()) {
 		case "left":
@@ -255,7 +264,7 @@ public class ExcelUtilsImpl implements IExcelUtil {
 			font.setFontHeight((short) (Integer.parseInt(pubAttrCfg.getFontSize()) * 20));//实际字体大小=fontSize
 		cellStyle.setFont(font);
 		String foregroundColor = pubAttrCfg.getForegroundColor();
-		if(foregroundColor != null && !"".equals(foregroundColor)){
+		/*if(foregroundColor != null && !"".equals(foregroundColor)){
 			String[] rgb = foregroundColor.split("\\#");
 			if(rgb.length == 3){
 				try {
@@ -267,11 +276,7 @@ public class ExcelUtilsImpl implements IExcelUtil {
 					logger.error("交易【"+tranCode+"】,获取forgroundColor配置项错误");
 				}
 			}
-		}
-		/*cellStyle.setBorderColor(BorderSide.TOP,new XSSFColor(new Color(113, 64, 60)));
-		cellStyle.setBorderColor(BorderSide.RIGHT,new XSSFColor(new Color(113, 64, 60)));
-		cellStyle.setBorderColor(BorderSide.BOTTOM,new XSSFColor(new Color(113, 64, 60)));
-		cellStyle.setBorderColor(BorderSide.LEFT,new XSSFColor(new Color(113, 64, 60)));*/
+		}*/
 		cellStyle.setBorderBottom(BorderStyle.THIN);
 		cellStyle.setBorderLeft(BorderStyle.THIN);
 		cellStyle.setBorderRight(BorderStyle.THIN);
@@ -295,7 +300,7 @@ public class ExcelUtilsImpl implements IExcelUtil {
 	 * @param dateCellStyle
 	 * @param workBook
 	 */
-	public void writeCell(String cellValue,ExcelColumnCfg colCfg,SXSSFCell contentTempCell,CellStyle dateCellStyle,SXSSFWorkbook workBook){
+	public void writeCell(String cellValue,ExcelCellPubAttrCfg colCfg,SXSSFCell contentTempCell,CellStyle dateCellStyle,SXSSFWorkbook workBook){
 		if(colCfg.getDataType() != null){//指定数据类型
 			switch(colCfg.getDataType()){
 			case "string":
@@ -385,6 +390,8 @@ public class ExcelUtilsImpl implements IExcelUtil {
 				contentRow.setHeight(Short.parseShort(contentCfg.getRowHeight()));
 				for (int j = 0; j < colCfgList.size() ; j++) {
 					colCfg = colCfgList.get(j);
+					//设置列宽
+					sheet.setColumnWidth(j, Integer.parseInt(colCfg.getColWidth() == null ? defaultColWidth+"":colCfg.getColWidth()));
 					colId = colCfg.getId();
 					keyIt = rowMap.keySet().iterator();
 					while(keyIt.hasNext()){
@@ -407,6 +414,8 @@ public class ExcelUtilsImpl implements IExcelUtil {
 				contentRow.setHeight(Short.parseShort(contentCfg.getRowHeight()));
 				for (int j = 0; j < colCfgList.size() ; j++) {
 					colCfg = colCfgList.get(j);
+					//设置列宽
+					sheet.setColumnWidth(j, Integer.parseInt(colCfg.getColWidth() == null ? defaultColWidth+"":colCfg.getColWidth()));
 					colId = colCfg.getId();
 					keyIt = rowMap.keySet().iterator();
 					while(keyIt.hasNext()){
@@ -453,8 +462,6 @@ public class ExcelUtilsImpl implements IExcelUtil {
 		rowIndex = 0;
 		List<HashMap<String, Object>> dataList = (List<HashMap<String, Object>>) pool.get("dataList");
 		String tranCode = (String) pool.get("tranCode");
-		//excel列默认宽度5000
-		int defaultColWidth = 5000;
 		
 		ExcelCfg excelCfg = XmlUtil.getExcelCfg(tranCode,fis);
 		ExcelTitleCfg titleCfg = excelCfg.getExcelTitle();
@@ -488,19 +495,6 @@ public class ExcelUtilsImpl implements IExcelUtil {
 			e1.printStackTrace();
 		}
 		
-		//生成临时文件
-		/*String fileName = (String) pool.get("fileName");
-//		String suffix = fileName.split("\\.")[fileName.split("\\.").length - 1];
-		String suffix = (String) pool.get("suffix");
-		FileOutputStream fos = null;
-		File targetFile = null;//生成最终文件
-		try {
-			targetFile = File.createTempFile(fileName, suffix);
-			fos = new FileOutputStream(targetFile);
-		} catch (Exception e1) {
-			e1.printStackTrace();
-		}*/
-		
 		int rowNum = dataList.size();//行数
 		int colNum = colCfgList.size();//列数
 		if(excelCfg.getColSize()  == null)
@@ -517,7 +511,8 @@ public class ExcelUtilsImpl implements IExcelUtil {
 		if(titleCfg != null){
 			XSSFRow titleRow = sheet.createRow(rowIndex++);
 			titleRow.setHeight(Short.parseShort(titleCfg.getRowHeight()));
-			XSSFCellStyle titleCellStyle = this.getCellStyle07(workBook, titleCfg,defaultFontName,defaultFontSize,tranCode);
+			XSSFCellStyle titleCellStyle = this.getCellStyle07(workBook, titleCfg,defaultFontName,defaultFontSize,tranCode,"","");
+//			CellStyle titleCellStyle = this.getCellStyleOfLargeFile(workBook, titleCfg, defaultFontName, defaultFontSize, tranCode, "", "");
 			for (int i = 0; i < colNum; i++) {
 				XSSFCell cellTitle = titleRow.createCell(i);
 				cellTitle.setCellStyle(titleCellStyle);
@@ -528,36 +523,43 @@ public class ExcelUtilsImpl implements IExcelUtil {
 			CellRangeAddress titleMergeRegion = new CellRangeAddress(0, 0, 0, colNum - 1);
 			sheet.addMergedRegion(titleMergeRegion);
 		}
-		
+		//日期cell类型
+		CellStyle dateCellStyle = this.getCellStyle07(workBook,contentCfg,defaultFontName,defaultFontSize,tranCode,"date","yyyy-MM-dd");
 		//查询条件行
 		if(conditionsCfg != null){
 			XSSFRow conditionRow = sheet.createRow(rowIndex++);
 			conditionRow.setHeight(Short.parseShort(conditionsCfg.getRowHeight()));
-			XSSFCellStyle contitionsStyle = this.getCellStyle07(workBook, conditionsCfg, defaultFontName, defaultFontSize,tranCode);
+			XSSFCellStyle contitionsStyle = this.getCellStyle07(workBook, conditionsCfg, defaultFontName, defaultFontSize,tranCode,"","");
+//			CellStyle contitionsStyle = this.getCellStyleOfLargeFile(workBook, conditionsCfg, defaultFontName, defaultFontSize, tranCode, "", "");
 			for (int i = 0; i < conditionList.size(); i++) {
 				ExcelConditionCfg conditionCfg = conditionList.get(i);
-				XSSFCellStyle conditionStyle = this.getCellStyle07(workBook,conditionCfg,defaultFontName,defaultFontSize,tranCode);
+				XSSFCellStyle conditionStyle = this.getCellStyle07(workBook,conditionCfg,defaultFontName,defaultFontSize,tranCode,"","");
+//				CellStyle conditionStyle = this.getCellStyleOfLargeFile(workBook, conditionCfg, defaultFontName, defaultFontSize, tranCode, "", "");
 				XSSFCell conditionNameCell = conditionRow.createCell(i * 2);
 				XSSFCell conditionValueCell = conditionRow.createCell(i * 2+1);
 				conditionNameCell.setCellStyle(contitionsStyle);
 				conditionValueCell.setCellStyle(conditionStyle);
 				conditionNameCell.setCellValue(conditionCfg.getName());
-				conditionValueCell.setCellValue(pool.get(conditionCfg.getId()) + "");
+//				conditionValueCell.setCellValue(pool.get(conditionCfg.getId()) + "");
+				this.writeCell(pool.get(conditionCfg.getId()) + "", conditionCfg, conditionValueCell, dateCellStyle, workBook);
 			}
 		}
 		
 		//表格列名行
-		XSSFRow colNameRow = sheet.createRow(rowIndex++);
-//		colNameRow.setHeight((short) 1000);
-		colNameRow.setHeight(Short.parseShort(colsCfg.getRowHeight()));
-		XSSFCellStyle colCellStyle = this.getCellStyle07(workBook, colsCfg,defaultFontName,defaultFontSize,tranCode);
-		for (int i = 0; i < colCfgList.size() ; i++) {
-			ExcelColumnCfg colCfg = colCfgList.get(i);
-			XSSFCell colNameCell = colNameRow.createCell(i);
-			colNameCell.setCellStyle(colCellStyle);
-			colNameCell.setCellValue(colCfg.getName());
-			//设置列宽
-			sheet.setColumnWidth(i, Integer.parseInt(colCfg.getColWidth() == null ? defaultColWidth+"":colCfg.getColWidth()));
+		if(!"false".equals(colsCfg.getIsShowColName())){
+			XSSFRow colNameRow = sheet.createRow(rowIndex++);
+//			colNameRow.setHeight((short) 1000);
+			colNameRow.setHeight(Short.parseShort(colsCfg.getRowHeight()));
+			XSSFCellStyle colCellStyle = this.getCellStyle07(workBook, colsCfg,defaultFontName,defaultFontSize,tranCode,"","");
+//			CellStyle colCellStyle = this.getCellStyleOfLargeFile(workBook, colsCfg, defaultFontName, defaultFontSize, tranCode, "", "");
+			for (int i = 0; i < colCfgList.size() ; i++) {
+				ExcelColumnCfg colCfg = colCfgList.get(i);
+				XSSFCell colNameCell = colNameRow.createCell(i);
+				colNameCell.setCellStyle(colCellStyle);
+				colNameCell.setCellValue(colCfg.getName());
+				//设置列宽
+				sheet.setColumnWidth(i, Integer.parseInt(colCfg.getColWidth() == null ? defaultColWidth+"":colCfg.getColWidth()));
+			}
 		}
 		
 		//表格正文行
@@ -711,5 +713,43 @@ public class ExcelUtilsImpl implements IExcelUtil {
 		}
 		return targetFile;
 	}
+
+	@Override
+	public void writeCell(String cellValue, ExcelCellPubAttrCfg colCfg, XSSFCell contentTempCell,
+			CellStyle dateCellStyle, XSSFWorkbook workBook) {
+		if(colCfg.getDataType() != null){//指定数据类型
+			switch(colCfg.getDataType()){
+			case "string":
+				contentTempCell.setCellValue(cellValue);
+				break;
+			case "double":
+				if(!"null".equals(cellValue.trim()) && !"".equals(cellValue.trim()) ){
+					if(null != colCfg.getScale() && !"null".equals(colCfg.getScale()) && !"".equals(colCfg.getScale())){
+						contentTempCell.setCellValue(Utils.formateDouble2Double(Double.parseDouble(cellValue), Integer.parseInt(colCfg.getScale())));
+					}else{
+						contentTempCell.setCellValue(Double.parseDouble(cellValue));
+					}
+				}
+				break;
+			case "date":
+				String dateFomate = "yyyy-MM-dd";//默认日期格式
+				if(colCfg.getDateFormat() != null){
+					dateFomate = colCfg.getDateFormat();
+				}
+				if(!("".equals(cellValue) || null == cellValue || "null".equals(cellValue))){
+					contentTempCell.setCellValue(Utils.formateString2Date(cellValue, dateFomate));
+				}
+				dateCellStyle.setDataFormat(workBook.createDataFormat().getFormat(dateFomate));
+                contentTempCell.setCellStyle(dateCellStyle);
+				break;
+			default:
+				contentTempCell.setCellValue(cellValue);
+				break;
+			}
+		}else{//未指定数据类型，按文本存储excel cell数据
+			contentTempCell.setCellValue(cellValue);
+		}
+	}
+
 
 }

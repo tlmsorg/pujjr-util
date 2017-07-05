@@ -2,7 +2,8 @@ package com.pujjr.xml.bean;
 
 public class ExcelConditionCfg extends ExcelCellPubAttrCfg{
 	private String id;//查询条件编码
-	private String name;//查询条件名称
+	private String name;//查询条件名称，节点：pjrp:condition的值赋为name
+	
 	public String getId() {
 		return id;
 	}

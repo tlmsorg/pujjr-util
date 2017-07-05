@@ -3,7 +3,20 @@ package com.pujjr.xml.bean;
 import java.util.List;
 
 public class ExcelColumnsCfg extends ExcelCellPubAttrCfg{
-	List<ExcelColumnCfg> excelColList;
+	private List<ExcelColumnCfg> excelColList;
+	private String isShowColName;
+
+	public String getIsShowColName() {
+		return isShowColName;
+	}
+
+	public void setIsShowColName(String isShowColName) {
+		this.isShowColName = isShowColName;
+	}
+
+	public void setShowColName(String isShowColName) {
+		this.isShowColName = isShowColName;
+	}
 
 	public List<ExcelColumnCfg> getExcelColList() {
 		return excelColList;

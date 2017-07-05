@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
@@ -41,6 +42,22 @@ public class Utils {
 	
 	
 	public static int seq=0;
+	
+	/**
+	 * 获取配置文件目录，配置所在目录为jar包所在目录下的conf目录中。
+	 * @return jar包目录->conf目录绝对路径
+	 */
+	public static String getJarConfFilepath(){
+		String filePath = Utils.class.getProtectionDomain().getCodeSource().getLocation().getFile();
+		try {
+			filePath = URLDecoder.decode(filePath, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		File file = new File(filePath);
+		filePath = file.getParent()+File.separator+"conf"+File.separator;
+		return filePath;
+	}
 	
 	/**
 	 * 获取property value值

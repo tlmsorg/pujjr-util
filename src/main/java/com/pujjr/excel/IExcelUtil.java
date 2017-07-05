@@ -11,6 +11,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.xssf.streaming.SXSSFCell;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -43,7 +44,7 @@ public interface IExcelUtil {
 	 * @param tranCode
 	 * @return
 	 */
-	public XSSFCellStyle getCellStyle07(XSSFWorkbook workBook,ExcelCellPubAttrCfg pubAttrCfg,String defaultFontName,int defaultFontSize,String tranCode);
+	public XSSFCellStyle getCellStyle07(XSSFWorkbook workBook,ExcelCellPubAttrCfg pubAttrCfg,String defaultFontName,int defaultFontSize,String tranCode,String dataType,String dateFormat);
 	
 	/**
 	 * 海量数据excel cell样式
@@ -70,14 +71,25 @@ public interface IExcelUtil {
 	public void writeLargeFile(String fileFullName,int pageNow,int pageSize,int pageTotal,String defaultFontName,
 			int defaultFontSize,String tranCode,List<HashMap<String, Object>> dataList,ExcelCfg excelCfg);
 	/**
-	 * 写入excel
-	 * @param cellValue
-	 * @param colCfg
-	 * @param contentTempCell
-	 * @param dateCellStyle
-	 * @param workBook
+	 * 写入excel(SXSSFWorkbook)
+	 * @param cellValue 待写入单元格值
+	 * @param colCfg 配置对象
+	 * @param contentTempCell 待写入值单元格
+	 * @param dateCellStyle 日期cell样式
+	 * @param workBook 工作薄对象
 	 */
-	public void writeCell(String cellValue,ExcelColumnCfg colCfg,SXSSFCell contentTempCell,CellStyle dateCellStyle,SXSSFWorkbook workBook);
+	public void writeCell(String cellValue,ExcelCellPubAttrCfg colCfg,SXSSFCell cell,CellStyle dateCellStyle,SXSSFWorkbook workBook);
+	
+	/**
+	 * 写入excel(XSSFWorkbook)
+	 * @param cellValue 待写入单元格值
+	 * @param colCfg 配置对象
+	 * @param contentTempCell 待写入值单元格
+	 * @param dateCellStyle 日期cell样式
+	 * @param workBook 工作薄对象
+	 */
+	public void writeCell(String cellValue,ExcelCellPubAttrCfg colCfg,XSSFCell contentTempCell,CellStyle dateCellStyle,XSSFWorkbook workBook);
+	
 	/**
 	 * 生成07版excel
 	 * @param pool
