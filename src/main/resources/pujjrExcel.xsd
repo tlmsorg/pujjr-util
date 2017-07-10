@@ -76,6 +76,11 @@
 				<xsd:documentation><![CDATA[指定精度。两位小数：2]]></xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="showPattern" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[指定显示模式。示例：###.00,两位小数数字]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:attributeGroup>
 	
 	<xsd:complexType name="excelType">

@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileSystemLoopException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,6 +26,8 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -208,9 +211,9 @@ public class ExcelUtilsImpl implements IExcelUtil {
 		cellStyle.setBorderTop(BorderStyle.THIN);
 		cellStyle.setFillBackgroundColor(new XSSFColor(new Color(100, 100, 100)));
 		
-		//日期格式
-		if("date".equals(dataType)){
-			cellStyle.setDataFormat(workBook.createDataFormat().getFormat(dateFormat));//日期格式
+		//日期数字格式
+		if("date".equals(dataType) || "double".equals(dataType)){
+			cellStyle.setDataFormat(workBook.createDataFormat().getFormat(dateFormat));//日期\数字格式
 		}
 		return cellStyle;
 	}
@@ -284,11 +287,10 @@ public class ExcelUtilsImpl implements IExcelUtil {
 //		cellStyle.setFillBackgroundColor(new XSSFColor(new Color(100, 100, 100)));
 		cellStyle.setFillBackgroundColor((short) 100);
 		
-		//日期格式
-		if("date".equals(dataType)){
-			cellStyle.setDataFormat(workBook.createDataFormat().getFormat(dateFormat));//日期格式
+		//日期\数字格式
+		if("date".equals(dataType) || "double".equals(dataType)){
+			cellStyle.setDataFormat(workBook.createDataFormat().getFormat(dateFormat));//日期数字格式
 		}
-			
 		return cellStyle;
 	}
 	
@@ -300,7 +302,8 @@ public class ExcelUtilsImpl implements IExcelUtil {
 	 * @param dateCellStyle
 	 * @param workBook
 	 */
-	public void writeCell(String cellValue,ExcelCellPubAttrCfg colCfg,SXSSFCell contentTempCell,CellStyle dateCellStyle,SXSSFWorkbook workBook){
+	public void writeCell(String cellValue,ExcelCellPubAttrCfg colCfg,SXSSFCell contentTempCell,CellStyle cellStyle,SXSSFWorkbook workBook){
+		contentTempCell.setCellStyle(cellStyle);
 		if(colCfg.getDataType() != null){//指定数据类型
 			switch(colCfg.getDataType()){
 			case "string":
@@ -323,8 +326,7 @@ public class ExcelUtilsImpl implements IExcelUtil {
 				if(!("".equals(cellValue) || null == cellValue || "null".equals(cellValue))){
 					contentTempCell.setCellValue(Utils.formateString2Date(cellValue, dateFomate));
 				}
-				dateCellStyle.setDataFormat(workBook.createDataFormat().getFormat(dateFomate));
-                contentTempCell.setCellStyle(dateCellStyle);
+				cellStyle.setDataFormat(workBook.createDataFormat().getFormat(dateFomate));
 				break;
 			default:
 				contentTempCell.setCellValue(cellValue);
@@ -372,20 +374,58 @@ public class ExcelUtilsImpl implements IExcelUtil {
 		int rowNum = dataList.size();//行数
 //		int colNum = colCfgList.size();//列数
 		/**
-		 * cellStyle 不能再创建cell时动态生成，excel对cellStyle上线存在限制，上限：65000左右
+		 * cellStyle 不能在创建cell时动态生成，excel对cellStyle上限存在限制，上限：65000左右
 		 */
-		//普通字符cell类型
-		CellStyle contentCellStyle = this.getCellStyleOfLargeFile(workBook,contentCfg,defaultFontName,defaultFontSize,tranCode,"","");
-		//日期cell类型
-		CellStyle dateCellStyle = this.getCellStyleOfLargeFile(workBook,contentCfg,defaultFontName,defaultFontSize,tranCode,"date","yyyy-MM-dd");
-		//日期cell类型
-		CellStyle dateTimeCellStyle = this.getCellStyleOfLargeFile(workBook,contentCfg,defaultFontName,defaultFontSize,tranCode,"date","yyyy-MM-dd hh:mm:ss");
+		//数据格式化器
+		DataFormat dataFormate = workBook.createDataFormat();
 		SXSSFSheet sheet = workBook.getSheetAt(0);
-		
+		CellStyle[] cellStyles = new CellStyle[colCfgList.size()];//列cellstyle数组
 		if(pageNow < pageTotal){//非最后页
 			for (int i = (pageNow - 1) * pageSize; i <(pageNow -1 + 1) * pageSize ; i++) {
 				rowMap = dataList.get(i);
-//				contentRow = sheet.createRow(i+3);
+				//设置列cellstyle
+				int index = 0;
+				if(i == (pageNow-1) * pageSize){
+					for (int j = 0; j < colCfgList.size() ; j++) {
+						//普通字符cell类型
+						CellStyle contentCellStyle = this.getCellStyleOfLargeFile(workBook,contentCfg,defaultFontName,defaultFontSize,tranCode,"","");
+						//日期cell类型
+						CellStyle dateCellStyle = this.getCellStyleOfLargeFile(workBook,contentCfg,defaultFontName,defaultFontSize,tranCode,"date","yyyy-MM-dd");
+						//数字cell类型
+						CellStyle numCellStyle = this.getCellStyleOfLargeFile(workBook,contentCfg,defaultFontName,defaultFontSize,tranCode,"double","###.00");
+						//当前字段所用cellStyle
+						CellStyle currCellStyle = contentCellStyle;
+						colCfg = colCfgList.get(j);
+						//设置列宽
+						sheet.setColumnWidth(j, Integer.parseInt(colCfg.getColWidth() == null ? defaultColWidth+"":colCfg.getColWidth()));
+						colId = colCfg.getId();
+						keyIt = rowMap.keySet().iterator();
+						String dataType = colCfg.getDataType() == null ? "string":colCfg.getDataType();//字段类型
+						String dateFormat = colCfg.getDateFormat();
+						String showPattern = colCfg.getShowPattern();
+						switch(dataType){
+						case "string":
+							currCellStyle = contentCellStyle;
+							break;
+						case "double":
+							if(showPattern != null)
+								numCellStyle.setDataFormat(dataFormate.getFormat(showPattern));
+							currCellStyle = numCellStyle;
+							break;
+						case "date":
+							if(dateFormat != null)
+								dateCellStyle.setDataFormat(dataFormate.getFormat(dateFormat));
+							currCellStyle = dateCellStyle;
+							break;
+						default:
+							currCellStyle = contentCellStyle;
+							break;
+						}
+						cellStyles[index++] = currCellStyle;
+					}
+				}
+				
+				//写入数据
 				contentRow = sheet.createRow(i+rowIndex);
 				contentRow.setHeight(Short.parseShort(contentCfg.getRowHeight()));
 				for (int j = 0; j < colCfgList.size() ; j++) {
@@ -398,10 +438,8 @@ public class ExcelUtilsImpl implements IExcelUtil {
 						key = keyIt.next();
 						if(key.equals(colId)){
 							contentTempCell = contentRow.createCell(j);
-							contentTempCell.setCellStyle(contentCellStyle);
-//							contentTempCell.setCellStyle(colCellStyle);
 							cellValue = rowMap.get(key)+"";
-							this.writeCell(cellValue, colCfg, contentTempCell, dateCellStyle, workBook);
+							this.writeCell(cellValue, colCfg, contentTempCell, cellStyles[j], workBook);
 						}
 					}
 				}
@@ -409,7 +447,48 @@ public class ExcelUtilsImpl implements IExcelUtil {
 		}else if (pageNow == pageTotal){//最后一页
 			for (int i = (pageNow-1) * pageSize; i < rowNum; i++) {
 				rowMap = dataList.get(i);
-//				contentRow = sheet.createRow(i+3);
+				//设置列cellstyle
+				int index = 0;
+				if(i == (pageNow-1) * pageSize){
+					for (int j = 0; j < colCfgList.size() ; j++) {
+						//普通字符cell类型
+						CellStyle contentCellStyle = this.getCellStyleOfLargeFile(workBook,contentCfg,defaultFontName,defaultFontSize,tranCode,"","");
+						//日期cell类型
+						CellStyle dateCellStyle = this.getCellStyleOfLargeFile(workBook,contentCfg,defaultFontName,defaultFontSize,tranCode,"date","yyyy-MM-dd");
+						//数字cell类型
+						CellStyle numCellStyle = this.getCellStyleOfLargeFile(workBook,contentCfg,defaultFontName,defaultFontSize,tranCode,"double","###");
+						//当前字段所用cellStyle
+						CellStyle currCellStyle = contentCellStyle;
+						colCfg = colCfgList.get(j);
+						//设置列宽
+						sheet.setColumnWidth(j, Integer.parseInt(colCfg.getColWidth() == null ? defaultColWidth+"":colCfg.getColWidth()));
+						colId = colCfg.getId();
+						keyIt = rowMap.keySet().iterator();
+						String dataType = colCfg.getDataType() == null ? "string":colCfg.getDataType();//字段类型
+						String dateFormat = colCfg.getDateFormat();
+						String showPattern = colCfg.getShowPattern();
+						switch(dataType){
+						case "string":
+							currCellStyle = contentCellStyle;
+							break;
+						case "double":
+							if(showPattern != null)
+								numCellStyle.setDataFormat(dataFormate.getFormat(showPattern));
+							currCellStyle = numCellStyle;
+							break;
+						case "date":
+							if(dateFormat != null)
+								dateCellStyle.setDataFormat(dataFormate.getFormat(dateFormat));
+							currCellStyle = dateCellStyle;
+							break;
+						default:
+							currCellStyle = contentCellStyle;
+							break;
+						}
+						cellStyles[index++] = currCellStyle;
+					}
+				}
+				//写入数据
 				contentRow = sheet.createRow(i+rowIndex);
 				contentRow.setHeight(Short.parseShort(contentCfg.getRowHeight()));
 				for (int j = 0; j < colCfgList.size() ; j++) {
@@ -422,13 +501,8 @@ public class ExcelUtilsImpl implements IExcelUtil {
 						key = keyIt.next();
 						if(key.equals(colId)){
 							contentTempCell = contentRow.createCell(j);
-							contentTempCell.setCellStyle(contentCellStyle);
-//							contentCellStyle = this.getCellStyleOfLargeFile(workBook,contentCfg,defaultFontName,defaultFontSize,tranCode,colCfg);
-							contentTempCell.setCellStyle(contentCellStyle);
-							/*cellValue = rowMap.get(key)+"";
-							contentTempCell.setCellValue(cellValue);*/
 							cellValue = rowMap.get(key)+"";
-							this.writeCell(cellValue, colCfg, contentTempCell, dateCellStyle, workBook);
+							this.writeCell(cellValue, colCfg, contentTempCell, cellStyles[j], workBook);
 						}
 					}
 				}
@@ -523,9 +597,10 @@ public class ExcelUtilsImpl implements IExcelUtil {
 			CellRangeAddress titleMergeRegion = new CellRangeAddress(0, 0, 0, colNum - 1);
 			sheet.addMergedRegion(titleMergeRegion);
 		}
-		//日期cell类型
-		CellStyle dateCellStyle = this.getCellStyle07(workBook,contentCfg,defaultFontName,defaultFontSize,tranCode,"date","yyyy-MM-dd");
-		//查询条件行
+		
+		
+		//格式化器
+		DataFormat dataFormat = workBook.createDataFormat();
 		if(conditionsCfg != null){
 			XSSFRow conditionRow = sheet.createRow(rowIndex++);
 			conditionRow.setHeight(Short.parseShort(conditionsCfg.getRowHeight()));
@@ -533,15 +608,40 @@ public class ExcelUtilsImpl implements IExcelUtil {
 //			CellStyle contitionsStyle = this.getCellStyleOfLargeFile(workBook, conditionsCfg, defaultFontName, defaultFontSize, tranCode, "", "");
 			for (int i = 0; i < conditionList.size(); i++) {
 				ExcelConditionCfg conditionCfg = conditionList.get(i);
-				XSSFCellStyle conditionStyle = this.getCellStyle07(workBook,conditionCfg,defaultFontName,defaultFontSize,tranCode,"","");
 //				CellStyle conditionStyle = this.getCellStyleOfLargeFile(workBook, conditionCfg, defaultFontName, defaultFontSize, tranCode, "", "");
 				XSSFCell conditionNameCell = conditionRow.createCell(i * 2);
 				XSSFCell conditionValueCell = conditionRow.createCell(i * 2+1);
+				String showPattern = conditionCfg.getShowPattern();
+				String dateFormat = conditionCfg.getDateFormat();
+				String dataType = conditionCfg.getDataType() == null ? "" : conditionCfg.getDataType();
+
+				//查询条件行
+				CellStyle conditionStyle = this.getCellStyle07(workBook,contentCfg,defaultFontName,defaultFontSize,tranCode,"","");
+				//日期cell类型
+				CellStyle dateCellStyle = this.getCellStyle07(workBook,contentCfg,defaultFontName,defaultFontSize,tranCode,"date","yyyy-MM-dd");
+				//数字cell类型
+				CellStyle numCellStyle = this.getCellStyle07(workBook,contentCfg,defaultFontName,defaultFontSize,tranCode,"double","###.00");
+				//当前cell样式
+				CellStyle currCellStyle = conditionStyle;
+				
+				switch(dataType){
+				case "string":
+					currCellStyle = conditionStyle;
+					break;
+				case "date":
+					if(dateFormat != null)
+						dateCellStyle.setDataFormat(dataFormat.getFormat(dateFormat));
+					currCellStyle = dateCellStyle;
+					break;
+				case "double":
+					if(showPattern != null)
+						numCellStyle.setDataFormat(dataFormat.getFormat(showPattern));
+					currCellStyle = numCellStyle;
+					break;
+				}
 				conditionNameCell.setCellStyle(contitionsStyle);
-				conditionValueCell.setCellStyle(conditionStyle);
 				conditionNameCell.setCellValue(conditionCfg.getName());
-//				conditionValueCell.setCellValue(pool.get(conditionCfg.getId()) + "");
-				this.writeCell(pool.get(conditionCfg.getId()) + "", conditionCfg, conditionValueCell, dateCellStyle, workBook);
+				this.writeCell(pool.get(conditionCfg.getId()) + "", conditionCfg, conditionValueCell, currCellStyle, workBook);
 			}
 		}
 		
@@ -717,6 +817,7 @@ public class ExcelUtilsImpl implements IExcelUtil {
 	@Override
 	public void writeCell(String cellValue, ExcelCellPubAttrCfg colCfg, XSSFCell contentTempCell,
 			CellStyle dateCellStyle, XSSFWorkbook workBook) {
+		contentTempCell.setCellStyle(dateCellStyle);
 		if(colCfg.getDataType() != null){//指定数据类型
 			switch(colCfg.getDataType()){
 			case "string":
@@ -740,7 +841,7 @@ public class ExcelUtilsImpl implements IExcelUtil {
 					contentTempCell.setCellValue(Utils.formateString2Date(cellValue, dateFomate));
 				}
 				dateCellStyle.setDataFormat(workBook.createDataFormat().getFormat(dateFomate));
-                contentTempCell.setCellStyle(dateCellStyle);
+				
 				break;
 			default:
 				contentTempCell.setCellValue(cellValue);

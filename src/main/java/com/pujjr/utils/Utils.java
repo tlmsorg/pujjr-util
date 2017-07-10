@@ -407,14 +407,16 @@ public class Utils {
 	 * tom 2016年11月2日
 	 * @param number 数据源
 	 * @param scale 小数位数
-	 * @return 格式化后双精度浮点数（输入：number=123.1 scale=3 输出："123.100"）
+	 * @param pattern 格式化模式
+	 * @return 格式化后双精度浮点数（输入：number=123.1 scale=3  输出："123.100"）
 	 */
-	public static String formateDouble2String(double number,int scale){
+	public static String formateDouble2String(double number,int scale,String pattern){
 		String formateDouble = "";
-		BigDecimal formater = new BigDecimal(number);
-//		new Double("");
-		formateDouble = formater.setScale(scale, BigDecimal.ROUND_HALF_UP).toString();
-		return formateDouble;
+		BigDecimal bitDecimal = new BigDecimal(number);
+		formateDouble = bitDecimal.setScale(scale, BigDecimal.ROUND_HALF_UP).toString();
+		DecimalFormat df = new DecimalFormat(pattern);
+		return df.format(formateDouble);
+//		return formateDouble;
 	}
 	
 	/**

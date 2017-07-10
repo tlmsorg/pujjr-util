@@ -99,5 +99,8 @@ public class Test {
 		Test test = new Test();
 		test.getFirstDayOfMonth("2017-03");
 		test.getLastDayOfMonth("2017-03");
+		
+		double d = 3.01567;
+		System.out.println(Utils.formateDouble2Double(d , 2));
 	}
 }

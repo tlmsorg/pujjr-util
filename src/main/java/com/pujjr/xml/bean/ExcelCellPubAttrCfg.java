@@ -18,9 +18,14 @@ public class ExcelCellPubAttrCfg {
 	private String dateFormat;//日期格式
 	private String scale;//double精度
 	
+	private String showPattern;//显示模式
 	
-	
-	
+	public String getShowPattern() {
+		return showPattern;
+	}
+	public void setShowPattern(String showPattern) {
+		this.showPattern = showPattern;
+	}
 	public String getDataType() {
 		return dataType;
 	}
