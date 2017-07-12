@@ -44,7 +44,7 @@ public interface IExcelUtil {
 	 * @param tranCode
 	 * @return
 	 */
-	public XSSFCellStyle getCellStyle07(XSSFWorkbook workBook,ExcelCellPubAttrCfg pubAttrCfg,String defaultFontName,int defaultFontSize,String tranCode,String dataType,String dateFormat);
+	public XSSFCellStyle getCellStyle07(XSSFWorkbook workBook,ExcelCellPubAttrCfg pubAttrCfg,String defaultFontName,int defaultFontSize,String tranCode);
 	
 	/**
 	 * 海量数据excel cell样式

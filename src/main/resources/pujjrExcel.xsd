@@ -57,7 +57,7 @@
 		</xsd:attribute>
 		<xsd:attribute name="foregroundColor" type="xsd:string">
 			<xsd:annotation>
-				<xsd:documentation><![CDATA[cell前景色,三原色(rgb)参数格式:红色#绿色#蓝色]]></xsd:documentation>
+				<xsd:documentation><![CDATA[cell前景色,【07格式excel】：此参数设置三原色(rgb),参数格式:红色#绿色#蓝色。【03格式excel】：此参数设置颜色名称，限如下参数：ROYAL_BLUE,TEAL,LIME,PALE_BLUE,AQUA,GREEN,TURQUOISE,DARK_BLUE,CORNFLOWER_BLUE,OLIVE_GREEN,WHITE,LIGHT_TURQUOISE,LEMON_CHIFFON,LIGHT_GREEN,BLUE,DARK_RED,CORAL,RED,LIGHT_YELLOW,SKY_BLUE,BROWN,SEA_GREEN,INDIGO,MAROON,GREY_80_PERCENT,GREY_25_PERCENT,DARK_GREEN,YELLOW,GOLD,GREY_40_PERCENT,DARK_TEAL,PINK,ORCHID,LIGHT_BLUE,LIGHT_CORNFLOWER_BLUE,BLACK,DARK_YELLOW,VIOLET,LAVENDER,ROSE,BLUE_GREY,LIGHT_ORANGE,ORANGE,GREY_50_PERCENT]]></xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 		
@@ -78,7 +78,7 @@
 		</xsd:attribute>
 		<xsd:attribute name="showPattern" type="xsd:string">
 			<xsd:annotation>
-				<xsd:documentation><![CDATA[指定显示模式。示例：###.00,两位小数数字]]></xsd:documentation>
+				<xsd:documentation><![CDATA[指定显示模式。示例：###.00,两位小数数字。默认单元格格式：常规，@：单元格格式为文本]]></xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 	</xsd:attributeGroup>
