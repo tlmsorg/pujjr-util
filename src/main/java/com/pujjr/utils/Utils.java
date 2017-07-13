@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
@@ -407,6 +409,21 @@ public class Utils {
 	 * tom 2016年11月2日
 	 * @param number 数据源
 	 * @param scale 小数位数
+	 * @return 格式化后双精度浮点数（输入：number=123.1 scale=3 输出："123.100"）
+	 */
+	public static String formateDouble2String(double number,int scale){
+		String formateDouble = "";
+		BigDecimal formater = new BigDecimal(number);
+//		new Double("");
+		formateDouble = formater.setScale(scale, BigDecimal.ROUND_HALF_UP).toString();
+		return formateDouble;
+	}
+	
+	/**
+	 * 双精度浮点数转制定格式字符串
+	 * tom 2016年11月2日
+	 * @param number 数据源
+	 * @param scale 小数位数
 	 * @param pattern 格式化模式
 	 * @return 格式化后双精度浮点数（输入：number=123.1 scale=3  输出："123.100"）
 	 */
@@ -767,6 +784,92 @@ public class Utils {
 		calender.setTime(date);
 		calender.add(Calendar.YEAR, interval);
 		return calender.getTime();
+	}
+	
+	/**
+	 * 属性拷贝(拷贝list成员变量)
+	 * tom 2016年11月7日
+	 * @param source 源对象
+	 * @param dest 目标对象
+	 */
+	public static void copyPropertiesDeep(Object source,Object dest){
+		Class srcCls = source.getClass();
+		Class destCls = dest.getClass();
+		List<Field> srcFieldList = Utils.getFieldList(srcCls);
+		List<Field> destFieldList = Utils.getFieldList(destCls);
+		Method[] srcMethods = srcCls.getMethods();
+		Method[] destMethods = destCls.getMethods();
+		List destList = new ArrayList();
+		for (int i = 0; i < srcFieldList.size(); i++) {
+			Field srcField = srcFieldList.get(i);
+			String srcFieldName = srcField.getName();
+			Class srcFieldType = srcField.getType();
+			String srcFieldTypeName = srcFieldType.getName();
+			Object srcFieldValue = null;
+			try {//处理source中list成员变量
+				srcFieldValue = srcField.get(source);
+//				System.out.println(srcFieldType.getName().equals(double.class.getName())+"*********|"+srcFieldValue);
+				for (Field destField : destFieldList) {
+					String destFieldName = destField.getName();
+					Class destFieldType = destField.getType();
+					if(srcFieldName.equals(destFieldName)){
+						if(srcFieldTypeName.equals(List.class.getName())){//判断list变量
+//							System.out.println(srcFieldType+"|"+srcFieldName+"|"+srcField.getGenericType());
+							List tempSrcFieldValue = (List) srcField.get(source);
+							Type gType  = destField.getGenericType();
+							ParameterizedType pType = (ParameterizedType) gType;
+							Type[] types = pType.getActualTypeArguments();
+//							System.out.println("****types[0]:"+types[0]+"|"+"types[0].getTypeName():"+types[0].getTypeName()+"|"+types[0].getTypeName().equals(RepayScheduleDetailPo.class.getTypeName())+"|"+types[0].getClass());
+//							System.out.println("ttt:"+srcField.get(source));
+							for (Object object : tempSrcFieldValue) {
+//								Object rsdv = Class.forName(types[0].getTypeName()).newInstance();//目前仅仅拷贝list泛型中含有一个参数的情况，如：List<String>
+								Object rsdv = Class.forName(types[0].toString().split(" ")[1]).newInstance();
+								Utils.copyProperties(object, rsdv);
+								destList.add(rsdv);
+							}
+						}
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			//处理resource中普通成员变量
+			for (Field destField : destFieldList) {
+				String destFieldName = destField.getName();
+				Class destFieldType = destField.getType();
+//				System.out.println(destFieldType+"|"+destFieldName);
+				if(destFieldName.equals(srcFieldName)){
+					for (int j = 0; j < destMethods.length; j++) {
+						Method destMethod = destMethods[j];
+						String methodName = destMethod.getName();
+						if(("set"+destFieldName).toLowerCase().equals(methodName.toLowerCase())){
+							try {
+								if(srcFieldTypeName.equals(List.class.getName())){
+									destMethod.invoke(dest, destList);
+								}else if(srcFieldValue != null){
+									if(srcFieldTypeName.equals(Date.class.getName())){
+										SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd");
+										destMethod.invoke(dest, formater.format(srcFieldValue));
+									}else if(srcFieldTypeName.equals(Double.class.getName()) || srcFieldTypeName.equals(double.class.getName())){
+										destMethod.invoke(dest, Utils.formateDouble2String((double)srcFieldValue, 2));
+//										destMethod.invoke(dest, srcFieldValue);
+									}else if(srcFieldTypeName.equals(Integer.class.getName()) || srcFieldTypeName.equals(int.class.getName())){
+										destMethod.invoke(dest, srcFieldValue+"");
+//										destMethod.invoke(dest, srcFieldValue);
+									}else if(!srcFieldType.isPrimitive()){
+										destMethod.invoke(dest, srcFieldValue);
+									}
+//									System.out.println("***********************srcFieldType.isMemberClass():"+srcFieldType.getName()+"|destFieldType:"+destFieldType.getName()+"|"+srcFieldType.getSuperclass());
+								}
+								
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 	
 	/**
